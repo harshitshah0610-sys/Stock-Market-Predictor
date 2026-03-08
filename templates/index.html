@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stock Market Predictor | US, NSE, BSE Stocks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="particle-bg" id="particles"></div>
+    
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 50 50" width="40" height="40">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00ff88"/>
+                            <stop offset="100%" style="stop-color:#00d4ff"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M5 40 L15 25 L25 30 L35 15 L45 20" stroke="url(#logoGrad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <circle cx="45" cy="20" r="4" fill="#00ff88"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-main">AIPredict</span>
+                <span class="logo-sub">Stock Market AI</span>
+            </div>
+        </div>
+        
+        <nav class="nav">
+            <!-- Exchange Tabs -->
+            <div class="exchange-tabs">
+                <button class="exchange-btn active" data-exchange="US">🇺🇸 US</button>
+                <button class="exchange-btn" data-exchange="NSE">🇮🇳 NSE</button>
+                <button class="exchange-btn" data-exchange="BSE">🇮🇳 BSE</button>
+            </div>
+            
+            <!-- Stock Search -->
+            <div class="stock-search">
+                <input type="text" id="stockSearch" placeholder="Search stocks..." autocomplete="off">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+            
+            <!-- Stock Selector -->
+            <div class="stock-selector">
+                <select id="stockSelect">
+                    <!-- Populated by JavaScript -->
+                </select>
+            </div>
+            
+            <div class="timeframe-selector">
+                <button class="tf-btn active" data-tf="1M">1M</button>
+                <button class="tf-btn" data-tf="3M">3M</button>
+                <button class="tf-btn" data-tf="6M">6M</button>
+                <button class="tf-btn" data-tf="1Y">1Y</button>
+            </div>
+        </nav>
+        
+        <div class="market-status">
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text">Market Live</span>
+            </div>
+            <div class="last-update">Last Update: <span id="lastUpdate">--:--:--</span></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="stock-display">
+                <div class="stock-header">
+                    <h1 class="stock-symbol" id="stockSymbol">AAPL</h1>
+                    <span class="stock-exchange" id="stockExchange">NASDAQ</span>
+                    <span class="stock-name" id="stockName">Apple Inc.</span>
+                </div>
+                <div class="stock-price-container">
+                    <span class="stock-price" id="stockPrice">$0.00</span>
+                    <span class="stock-change" id="stockChange">+0.00%</span>
+                </div>
+            </div>
+            
+            <div class="prediction-gauge-container">
+                <div class="gauge-wrapper">
+                    <svg class="prediction-gauge" viewBox="0 0 200 120">
+                        <defs>
+                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#ff3366"/>
+                                <stop offset="50%" style="stop-color:#ffd700"/>
+                                <stop offset="100%" style="stop-color:#00ff88"/>
+                            </linearGradient>
+                        </defs>
+                        <path class="gauge-bg" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1e3a5f" stroke-width="12" stroke-linecap="round"/>
+                        <path class="gauge-fill" id="gaugeFill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+                        <circle class="gauge-needle" id="gaugeNeedle" cx="100" cy="100" r="8" fill="#00ff88"/>
+                    </svg>
+                    <div class="gauge-value">
+                        <span class="gauge-number" id="probUp">50</span>
+                        <span class="gauge-label">% Probability UP</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3><span class="card-icon">📈</span> Price Chart & AI Prediction</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card stats-card">
+                <div class="card-header">
+                    <h3><span class="card-icon">📊</span> Statistics</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Volatility Index</span>
+                        <span class="stat-value" id="volatility">--</span>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" id="volatilityBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Market Sentiment</span>
+                        <span class="stat-value" id="sentiment">--</span>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill positive" id="sentimentBar" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">AI Confidence</span>
+                        <span class="stat-value" id="confidence">--</span>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" id="confidenceBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">S&P 500 Change</span>
+                        <span class="stat-value" id="spChange">--</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="events-section">
+            <h2 class="section-title"><span class="title-icon">⚡</span> Global Events Impact Analysis</h2>
+            
+            <div class="events-grid">
+                <div class="card event-card war-events">
+                    <div class="card-header event-header">
+                        <h3><span class="event-icon">⚔️</span> War & Conflict</h3>
+                        <span class="event-count" id="warCount">0</span>
+                    </div>
+                    <div class="event-list" id="warEventsList"></div>
+                </div>
+                
+                <div class="card event-card tech-events">
+                    <div class="card-header event-header">
+                        <h3><span class="event-icon">💻</span> Tech Events</h3>
+                        <span class="event-count" id="techCount">0</span>
+                    </div>
+                    <div class="event-list" id="techEventsList"></div>
+                </div>
+                
+                <div class="card event-card resource-events">
+                    <div class="card-header event-header">
+                        <h3><span class="event-icon">⛏️</span> Resource Scarcity</h3>
+                        <span class="event-count" id="resourceCount">0</span>
+                    </div>
+                    <div class="event-list" id="resourceEventsList"></div>
+                </div>
+                
+                <div class="card event-card natural-events">
+                    <div class="card-header event-header">
+                        <h3><span class="event-icon">🌍</span> Natural Events</h3>
+                        <span class="event-count" id="naturalCount">0</span>
+                    </div>
+                    <div class="event-list" id="naturalEventsList"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="prediction-details">
+            <div class="card prediction-card">
+                <div class="card-header">
+                    <h3><span class="card-icon">🤖</span> AI Prediction Details</h3>
+                </div>
+                <div class="prediction-content">
+                    <div class="prediction-probability">
+                        <div class="prob-bar">
+                            <div class="prob-bar-label">Bearish</div>
+                            <div class="prob-bar-track">
+                                <div class="prob-bar-fill bearish" id="probDownBar" style="width: 50%"></div>
+                            </div>
+                            <div class="prob-bar-value" id="probDown">50%</div>
+                        </div>
+                        <div class="prob-bar">
+                            <div class="prob-bar-label">Bullish</div>
+                            <div class="prob-bar-track">
+                                <div class="prob-bar-fill bullish" id="probUpBar" style="width: 50%"></div>
+                            </div>
+                            <div class="prob-bar-value" id="probUpValue">50%</div>
+                        </div>
+                    </div>
+                    <div class="prediction-factors">
+                        <h4>Impact Factors</h4>
+                        <div class="factor-list">
+                            <div class="factor-item">
+                                <span class="factor-name">War Events</span>
+                                <span class="factor-impact" id="factorWar">0%</span>
+                            </div>
+                            <div class="factor-item">
+                                <span class="factor-name">Tech Events</span>
+                                <span class="factor-impact" id="factorTech">0%</span>
+                            </div>
+                            <div class="factor-item">
+                                <span class="factor-name">Resource Scarcity</span>
+                                <span class="factor-impact" id="factorResource">0%</span>
+                            </div>
+                            <div class="factor-item">
+                                <span class="factor-name">Natural Events</span>
+                                <span class="factor-impact" id="factorNatural">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="prediction-timeline">
+                        <h4>7-Day Price Prediction</h4>
+                        <div class="timeline" id="predictionTimeline"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-disclaimer">
+                <p>⚠️ <strong>Disclaimer:</strong> This is an AI-powered prediction tool for educational purposes only. 
+                Stock market investments involve significant risk. Past performance does not guarantee future results. 
+                Always consult with a qualified financial advisor before making investment decisions.</p>
+            </div>
+            <div class="footer-credits">
+                <p>🤖 AI Stock Market Predictor | Supporting US, NSE (India), BSE (India) Stocks | Powered by Yahoo Finance</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
+
