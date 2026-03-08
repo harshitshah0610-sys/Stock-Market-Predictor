@@ -53,8 +53,8 @@ The AI analyzes multiple factors to predict stock movements:
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/stock-market-predictor.git
-cd stock-market-predictor
+git clone https://github.com/harshitshah0610-sys/Stock-Market-Predictor.git
+cd Stock-Market-Predictor
 ```
 
 2. **Create virtual environment** (optional but recommended)
@@ -85,15 +85,16 @@ Navigate to: `http://127.0.0.1:5000`
 stock-market-predictor/
 ├── app.py                 # Flask backend with AI prediction engine
 ├── requirements.txt       # Python dependencies
-├── README.md             # This file
-├── SPEC.md               # Project specification
+├── README.md              # This file
+├── SPEC.md                # Project specification
+├── .gitignore             # Git ignore file
 ├── static/
 │   ├── css/
-│   │   └── style.css     # Modern dark-themed stylesheet
+│   │   └── style.css      # Modern dark-themed stylesheet
 │   └── js/
-│       └── main.js       # Frontend JavaScript with Chart.js
+│       └── main.js        # Frontend JavaScript with Chart.js
 └── templates/
-    └── index.html        # Main dashboard page
+    └── index.html         # Main dashboard page
 ```
 
 ## 🔌 API Endpoints
@@ -136,7 +137,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👨‍💻 Author
 
-Your Name - [GitHub](https://github.com/yourusername)
+Harshit Shah - [GitHub](https://github.com/harshitshah0610-sys)
 
 ---
 
